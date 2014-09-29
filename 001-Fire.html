@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+	<title>Fire</title>
+	<style>
+	body, html {
+	background: #2e2e2e;
+	}
+	div {
+		position:relative;
+		border-radius: 10px;
+		height: 40px;
+		background:#996633;
+		background: -moz-linear-gradient(top, #f0b7a1 0%, #8c3310 32%, #752201 67%, #bf6e4e 100%);
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f0b7a1), color-stop(32%,#8c3310), color-stop(67%,#752201), color-stop(100%,#bf6e4e));
+        background: -webkit-linear-gradient(top, #f0b7a1 0%,#8c3310 32%,#752201 67%,#bf6e4e 100%);
+	}
+	</style>
+</head>
+
+<body>
+	<center>
+	<canvas id="c" width="600" height="400"></canvas>
+	<div style="width:600px;margin-top:-30px"></div>
+<div style="width:150px;margin-top:-80px;"></div>
+</center>
+
+<script>
+var canvas = document.getElementById('c'),
+    ctx = canvas.getContext('2d'),
+    cw = canvas.width,
+    ch = canvas.height;
+
+function fire() {
+    for(i = 0; i < 20; i++) {
+        ctx.fillStyle = (i % 2 == 1) ? 'orange' : '#fa6105';
+        if(Math.random() * 5 > 3)ctx.fillStyle = "#ff0000";
+        ctx.fillRect(10 + Math.random() * (cw - 30), ch - 10 - Math.random() * 10, Math.random() * 10,1 + Math.random() * 3);
+        if(i < 10)ctx.fillRect(245 + Math.random() * 100, ch - 30 - Math.random() * 5, Math.random() * 10, 1 + Math.random() * 3);
+    }
+
+	pixels2 = ctx.getImageData(0 , 0, cw, ch);
+	pixels = pixels2.data;
+	for(y = 5; y < ch - 5; y++) {
+		for(x = 5; x< cw - 5; x++) {
+			curpix = y * cw * 4 + x * 4;
+
+			r = Math.max(46, (pixels[curpix +cw*2*4]   + pixels[curpix]   + pixels[curpix-4] + pixels[curpix+4] -3)  / 4);
+			g = Math.max(46, (pixels[curpix +cw*2*4+1] + pixels[curpix+1] + pixels[curpix-3] + pixels[curpix+5] -3)  / 4);
+			b = Math.max(46, (pixels[curpix +cw*2*4+2] + pixels[curpix+2] + pixels[curpix-2] + pixels[curpix+6] -3)  / 4);
+
+			pixels[curpix - cw*4]    = r;
+			pixels[curpix - cw*4 +1] = g;
+			pixels[curpix - cw*4 +2] = b;
+			pixels[curpix - cw*4 +3] = 255;
+		}
+	}
+    ctx.putImageData(pixels2, 0, 0);
+    requestAnimationFrame(fire);
+}
+fire();
+</script>
